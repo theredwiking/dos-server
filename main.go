@@ -13,6 +13,15 @@ func main() {
 		w.Write([]byte("Server is running"))
 	})
 
-	router.HandleFunc("GET /game/create", game.Create)
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	gameRoutes := game.Routes()
+	router.Handle("/game/", http.StripPrefix("/game", gameRoutes))
+
+
+	server := http.Server{
+		Addr:    ":3000",
+		Handler: router,
+	}
+
+	log.Println("Server is running on port 3000")
+	log.Fatal(server.ListenAndServe())
 }
