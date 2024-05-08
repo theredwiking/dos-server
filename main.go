@@ -8,9 +8,11 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+	router := http.NewServeMux()
+	router.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Server is running"))
 	})
-	http.HandleFunc("/create", game.Create)
+
+	router.HandleFunc("GET /game/create", game.Create)
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }
