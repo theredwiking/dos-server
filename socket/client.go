@@ -12,7 +12,6 @@ type Client struct {
 	Id   uint32 `json:"id"`
 	Name string	`json:"name"`
 	Conn *websocket.Conn
-	Writer chan []byte
 }
 
 var upgrader = websocket.Upgrader{}
@@ -44,16 +43,11 @@ func (c *Client) Read(messages chan []byte) {
 	}
 }
 
-func (c *Client) Write() {
-	for {
-		select {
-		case msg := <-c.Writer:
-			err := c.Conn.WriteMessage(websocket.TextMessage, msg)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
+func (c *Client) Write(msg []byte) {
+	err := c.Conn.WriteMessage(websocket.TextMessage, msg)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 }
 

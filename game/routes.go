@@ -9,7 +9,7 @@ func Routes() *http.ServeMux{
 
 	router.HandleFunc("GET /create", create)
 	router.HandleFunc("GET /active", activeGames)
-	router.HandleFunc("/join/{id}", joinGame)
+	router.HandleFunc("/join/{code}", joinGame)
 
 	return router
 }

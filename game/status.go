@@ -8,16 +8,16 @@ import (
 	"github.com/theredwiking/dos-server/socket"
 )
 
-type ActiveGame map[uint32]socket.GameInfo
+type ActiveGame map[string]socket.GameInfo
 
 var activeGameInfo = make(ActiveGame)
 
 func addActiveGame(game socket.GameInfo) {
-	activeGameInfo[game.Id] = game
+	activeGameInfo[game.Code] = game
 }
 
-func removeActiveGame(id uint32) {
-	delete(activeGameInfo, id)
+func removeActiveGame(code string) {
+	delete(activeGameInfo, code)
 }
 
 func activeGames(w http.ResponseWriter, r *http.Request) {

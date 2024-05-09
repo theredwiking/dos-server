@@ -12,7 +12,6 @@ import (
 
 func create(w http.ResponseWriter, r *http.Request) {
 	game := socket.GameInfo{
-		Id: uuid.New().ID(),
 		Code: generateCode(),
 		Owner: uuid.New().ID(),
 	}

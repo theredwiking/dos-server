@@ -1,7 +1,8 @@
 package socket
 
+import "log"
+
 type GameInfo struct {
-	Id uint32 `json:"id"`
 	Code string `json:"code"`
 	Owner uint32 `json:"owner"`
 }
@@ -20,13 +21,13 @@ func NewGame(game GameInfo) *Game {
 
 func (g *Game) AddClient(client Client) {
 	g.Clients = append(g.Clients, client)
-	g.OwnerMessage([]byte(client.Name + " has joined the game"))
+	g.Broadcast([]byte(client.Name + " has joined the game"))
 }
 
 func (g *Game) OwnerMessage(message []byte) {
 	for _, client := range g.Clients {
 		if client.Id == g.Info.Owner {
-			client.Writer <- message
+			client.Write(message)
 			break
 		}
 	}
@@ -38,7 +39,8 @@ func (g *Game) IsFull() bool {
 
 func (g *Game) Broadcast(message []byte) {
 	for _, client := range g.Clients {
-		client.Writer <- message
+		log.Printf("Broadcasting message to client %d: %s\n", client.Id, message)
+		client.Write(message)
 	}
 }
 
