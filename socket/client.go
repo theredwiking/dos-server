@@ -9,8 +9,8 @@ import (
 )
 
 type Client struct {
-	Id   uint32
-	Name string
+	Id   uint32 `json:"id"`
+	Name string	`json:"name"`
 	Conn *websocket.Conn
 	Writer chan []byte
 }
@@ -39,6 +39,7 @@ func (c *Client) Read(messages chan []byte) {
 			log.Println(err)
 			return
 		}
+		log.Printf("Message received from client %d: %s\n", c.Id, msg)
 		messages <- msg
 	}
 }

@@ -1,7 +1,6 @@
 package game
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -15,10 +14,12 @@ var gameList = make(Games)
 
 func addGame(game socket.GameInfo) {
 	gameList[game.Id] = socket.NewGame(game)
+	addActiveGame(game)
 }
 
 func removeGame(id uint32) {
 	delete(gameList, id)
+	removeActiveGame(id)
 }
 
 func joinGame(w http.ResponseWriter, r *http.Request) {
@@ -27,10 +28,17 @@ func joinGame(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid game id", http.StatusBadRequest)
 		return
 	}
+
 	game := gameList[uint32(gameId)]
 	if game == nil {
 		http.Error(w, "Game not found", http.StatusNotFound)
 		log.Println("Game not found:", gameId)
+		return
+	}
+	
+	if game.IsFull() {
+		http.Error(w, "Game is full", http.StatusForbidden)
+		log.Println("Game is full:", gameId)
 		return
 	}
 
@@ -40,18 +48,4 @@ func joinGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	game.AddClient(*client)
-	log.Println("Client joined game: %d, Userid: %d", gameId, client.Id)
-}
-
-func activeGames(w http.ResponseWriter, r *http.Request) {
-	log.Println("Getting list of active games:", gameList)
-	jsonData, err := json.Marshal(gameList)
-	if err != nil {
-		http.Error(w, "Error reading list of active games", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonData)
 }

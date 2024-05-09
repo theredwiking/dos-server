@@ -8,7 +8,7 @@ type GameInfo struct {
 
 type Game struct {
 	Info GameInfo `json:"info"`
-	Clients []Client `json:"players"`
+	Clients []Client `json:"clients"`
 }
 
 func NewGame(game GameInfo) *Game {
@@ -30,6 +30,10 @@ func (g *Game) OwnerMessage(message []byte) {
 			break
 		}
 	}
+}
+
+func (g *Game) IsFull() bool {
+	return len(g.Clients) >= 10
 }
 
 func (g *Game) Broadcast(message []byte) {
