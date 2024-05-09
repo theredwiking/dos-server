@@ -2,29 +2,39 @@ package socket
 
 import (
 	"log"
-	"math/rand"
+	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
-	id   int
-	name string
-	conn *websocket.Conn
-	write chan []byte
+	Id   uint32
+	Name string
+	Conn *websocket.Conn
+	Writer chan []byte
 }
 
-func NewClient(conn *websocket.Conn, name string) *Client {
+var upgrader = websocket.Upgrader{}
+
+func NewClient(w http.ResponseWriter, r *http.Request) *Client {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error upgrading connection", http.StatusInternalServerError)
+		return nil
+	}
+
 	return &Client{
-		id:   rand.Int(),
-		name: name,
-		conn: conn,
+		Id:   uuid.New().ID(),
+		Name: "John",
+		Conn: conn,
 	}
 }
 
 func (c *Client) Read(messages chan []byte) {
 	for {
-		_, msg, err := c.conn.ReadMessage()
+		_, msg, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
@@ -36,12 +46,16 @@ func (c *Client) Read(messages chan []byte) {
 func (c *Client) Write() {
 	for {
 		select {
-		case msg := <-c.write:
-			err := c.conn.WriteMessage(websocket.TextMessage, msg)
+		case msg := <-c.Writer:
+			err := c.Conn.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Println(err)
 				return
 			}
 		}
 	}
+}
+
+func (c *Client) Close() {
+	c.Conn.Close()
 }

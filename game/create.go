@@ -6,19 +6,15 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/theredwiking/dos-server/socket"
 )
 
-type Game struct {
-	Id uint32 `json:"id"`
-	Code string `json:"code"`
-	Owner string `json:"owner"`
-}
 
-func Create(w http.ResponseWriter, r *http.Request) {
-	game := Game{
+func create(w http.ResponseWriter, r *http.Request) {
+	game := socket.GameInfo{
 		Id: uuid.New().ID(),
-		Code: GenerateCode(),
-		Owner: "John",
+		Code: generateCode(),
+		Owner: uuid.New().ID(),
 	}
 
 	jsonData, err := json.Marshal(game)
@@ -27,12 +23,14 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	addGame(game)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(jsonData)
 }
 
-func GenerateCode() string {
+func generateCode() string {
 	possibleChars := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGLMNOPQRSTUVWXYZ"
 	code := ""
 	for i := 0; i < 6; i++ {
