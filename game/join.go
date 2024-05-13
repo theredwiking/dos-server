@@ -13,12 +13,10 @@ var gameList = make(Games)
 
 func addGame(game socket.GameInfo) {
 	gameList[game.Code] = socket.NewGame(game)
-	addActiveGame(game)
 }
 
 func removeGame(code string) {
-	delete(gameList, code)
-	removeActiveGame(code)
+delete(gameList, code)
 }
 
 func joinGame(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +40,6 @@ func joinGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
+	go client.Write()
 	game.AddClient(*client)
-	log.Printf("Client %d joined game %s\n", client.Id, gameId)
 }

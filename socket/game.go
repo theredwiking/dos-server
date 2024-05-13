@@ -9,45 +9,48 @@ type GameInfo struct {
 
 type Game struct {
 	Info GameInfo `json:"info"`
-	Clients []Client `json:"clients"`
+	clients []Client
+	Connections uint32
 }
 
 func NewGame(game GameInfo) *Game {
 	return &Game{
 		Info: game,
-		Clients: []Client{},
+		clients: []Client{},
+		Connections: 0,
 	}
 }
 
 func (g *Game) AddClient(client Client) {
-	g.Clients = append(g.Clients, client)
+	g.clients = append(g.clients, client)
+	g.Connections++
 	g.Broadcast([]byte(client.Name + " has joined the game"))
 }
 
 func (g *Game) OwnerMessage(message []byte) {
-	for _, client := range g.Clients {
+	for _, client := range g.clients {
 		if client.Id == g.Info.Owner {
-			client.Write(message)
+			client.send <- message
 			break
 		}
 	}
 }
 
 func (g *Game) IsFull() bool {
-	return len(g.Clients) >= 10
+	return len(g.clients) >= 10
 }
 
 func (g *Game) Broadcast(message []byte) {
-	for _, client := range g.Clients {
+	for _, client := range g.clients {
 		log.Printf("Broadcasting message to client %d: %s\n", client.Id, message)
-		client.Write(message)
+		client.send <- message
 	}
 }
 
 func (g *Game) RemoveClient(client Client) {
-	for i, c := range g.Clients {
+	for i, c := range g.clients {
 		if c.Id == client.Id && g.Info.Owner != client.Id {
-			g.Clients = append(g.Clients[:i], g.Clients[i+1:]...)
+			g.clients = append(g.clients[:i], g.clients[i+1:]...)
 			client.Close()
 			g.Broadcast([]byte(client.Name + " has left the game"))
 			break

@@ -3,6 +3,7 @@ package socket
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -12,6 +13,7 @@ type Client struct {
 	Id   uint32 `json:"id"`
 	Name string	`json:"name"`
 	Conn *websocket.Conn
+	send chan []byte
 }
 
 var upgrader = websocket.Upgrader{}
@@ -28,6 +30,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 		Id:   uuid.New().ID(),
 		Name: "John",
 		Conn: conn,
+		send: make(chan []byte),
 	}
 }
 
@@ -43,11 +46,23 @@ func (c *Client) Read(messages chan []byte) {
 	}
 }
 
-func (c *Client) Write(msg []byte) {
-	err := c.Conn.WriteMessage(websocket.TextMessage, msg)
-	if err != nil {
-		log.Println(err)
-		return
+func (c *Client) Write() {
+	ticker := time.NewTicker(30 * time.Second)
+	for {
+		select {
+		case msg := <-c.send:
+			err := c.Conn.WriteMessage(websocket.TextMessage, msg)
+			if err != nil {
+				log.Println(err)
+			}
+
+		case <-ticker.C:
+			log.Println("Sending ping to client", c.Id)
+			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				log.Println(err)
+				return
+			}
+		}
 	}
 }
 
