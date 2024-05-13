@@ -11,6 +11,7 @@ type Game struct {
 	Info GameInfo `json:"info"`
 	clients []Client
 	Connections uint32
+	messages chan []byte
 }
 
 func NewGame(game GameInfo) *Game {
@@ -18,12 +19,14 @@ func NewGame(game GameInfo) *Game {
 		Info: game,
 		clients: []Client{},
 		Connections: 0,
+		messages: make(chan []byte),
 	}
 }
 
 func (g *Game) AddClient(client Client) {
 	g.clients = append(g.clients, client)
 	go client.Write()
+	go client.Read(g.messages)
 	g.Connections++
 	g.Broadcast([]byte(client.Name + " has joined the game"))
 }
@@ -33,6 +36,29 @@ func (g *Game) OwnerMessage(message []byte) {
 		if client.Id == g.Info.Owner {
 			client.send <- message
 			break
+		}
+	}
+}
+
+func (g *Game) Start() {
+	g.Broadcast([]byte("Game starting!"))
+}
+
+func (g *Game) End() {
+	g.Broadcast([]byte("Game ending!"))
+}
+
+func (g *Game) Close() {
+	for _, client := range g.clients {
+		client.Close()
+	}
+}
+
+func (g *Game) ReadMessages() {
+	for {
+		select {
+		case msg := <-g.messages:
+			log.Printf("Message received from client: %s\n", msg)
 		}
 	}
 }
