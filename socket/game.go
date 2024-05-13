@@ -23,6 +23,7 @@ func NewGame(game GameInfo) *Game {
 
 func (g *Game) AddClient(client Client) {
 	g.clients = append(g.clients, client)
+	go client.Write()
 	g.Connections++
 	g.Broadcast([]byte(client.Name + " has joined the game"))
 }

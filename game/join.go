@@ -40,6 +40,5 @@ func joinGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	go client.Write()
 	game.AddClient(*client)
 }
