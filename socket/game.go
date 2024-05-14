@@ -2,8 +2,6 @@ package socket
 
 import (
 	"log"
-
-	"github.com/theredwiking/dos-server/game"
 )
 
 type GameInfo struct {
