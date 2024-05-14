@@ -1,6 +1,10 @@
 package socket
 
-import "log"
+import (
+	"log"
+
+	"github.com/theredwiking/dos-server/game"
+)
 
 type GameInfo struct {
 	Code string `json:"code"`
@@ -29,15 +33,6 @@ func (g *Game) AddClient(client Client) {
 	go client.Read(g.messages)
 	g.Connections++
 	g.Broadcast([]byte(client.Name + " has joined the game"))
-}
-
-func (g *Game) OwnerMessage(message []byte) {
-	for _, client := range g.clients {
-		if client.Id == g.Info.Owner {
-			client.send <- message
-			break
-		}
-	}
 }
 
 func (g *Game) Start() {

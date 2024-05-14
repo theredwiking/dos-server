@@ -41,7 +41,6 @@ func (c *Client) Read(messages chan []byte) {
 			log.Println(err)
 			return
 		}
-		log.Printf("Message received from client %d: %s\n", c.Id, msg)
 		messages <- msg
 	}
 }

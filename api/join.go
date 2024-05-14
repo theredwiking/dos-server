@@ -1,4 +1,4 @@
-package game
+package api
 
 import (
 	"log"
@@ -12,11 +12,13 @@ type Games map[string]*socket.Game
 var gameList = make(Games)
 
 func addGame(game socket.GameInfo) {
-	gameList[game.Code] = socket.NewGame(game)
+	newGame := socket.NewGame(game)
+	go newGame.ReadMessages()
+	gameList[game.Code] = newGame
 }
 
 func removeGame(code string) {
-delete(gameList, code)
+	delete(gameList, code)
 }
 
 func joinGame(w http.ResponseWriter, r *http.Request) {

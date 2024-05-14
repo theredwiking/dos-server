@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/theredwiking/dos-server/game"
+	"github.com/theredwiking/dos-server/api"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 		w.Write([]byte("Server is running"))
 	})
 
-	gameRoutes := game.Routes()
+	gameRoutes := api.Routes()
 	router.Handle("/game/", http.StripPrefix("/game", gameRoutes))
 
 
