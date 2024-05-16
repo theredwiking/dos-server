@@ -3,6 +3,7 @@ package socket
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -34,6 +35,10 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 	}
 }
 
+func (c *Client) id() string {
+	return strconv.FormatUint(uint64(c.Id), 10)
+}
+
 func (c *Client) Read(messages chan []byte) {
 	for {
 		_, msg, err := c.Conn.ReadMessage()
@@ -41,6 +46,7 @@ func (c *Client) Read(messages chan []byte) {
 			log.Println(err)
 			return
 		}
+		msg = []byte(c.id() + ": " + string(msg))
 		messages <- msg
 	}
 }
