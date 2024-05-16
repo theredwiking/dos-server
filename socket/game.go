@@ -34,11 +34,11 @@ func (g *Game) AddClient(client Client) {
 }
 
 func (g *Game) Start() {
-	g.Broadcast([]byte("Game starting!"))
+	g.Broadcast([]byte("game:started"))
 }
 
 func (g *Game) End() {
-	g.Broadcast([]byte("Game ending!"))
+	g.Broadcast([]byte("game:ended"))
 }
 
 func (g *Game) Close() {
