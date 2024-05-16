@@ -2,6 +2,7 @@ package socket
 
 import (
 	"log"
+	"strconv"
 )
 
 type GameInfo struct {
@@ -30,7 +31,7 @@ func (g *Game) AddClient(client Client) {
 	go client.Write()
 	go client.Read(g.messages)
 	g.Connections++
-	g.Broadcast([]byte(client.Name + " has joined the game"))
+	g.Broadcast([]byte("joined:" + client.Name))
 }
 
 func (g *Game) Start() {
@@ -47,11 +48,43 @@ func (g *Game) Close() {
 	}
 }
 
+func splitMessage(message []byte) (uint32, []byte, []byte) {
+	id := uint32(0)
+	for i, byte := range message {
+		if byte == ':' {
+			id, err := strconv.ParseUint(string(message[:i]), 10, 32)
+			if err != nil {
+				log.Println(err)
+				id = 0
+			}
+			for j, byte := range message[i+1:] {
+				if byte == ':' {
+					return uint32(id), message[i+1:i+j+1], message[i+j+2:]
+				}
+			}
+		}
+	}
+	return id, []byte{}, message
+}
+
 func (g *Game) ReadMessages() {
 	for {
 		select {
 		case msg := <-g.messages:
-			log.Printf("Message received from client: %s\n", msg)
+			id, action, message := splitMessage(msg)
+			if id == 0 {
+				log.Println("Invalid message received")
+				continue
+			}
+			if id == g.Info.Owner && string(action) == "game" {
+				switch string(message) {
+				case "start":
+					g.Start()
+				case "end":
+					g.End()
+				}
+			}
+			log.Printf("Message received from client %d: %s\n", id, message)
 		}
 	}
 }
@@ -72,7 +105,7 @@ func (g *Game) RemoveClient(client Client) {
 		if c.Id == client.Id && g.Info.Owner != client.Id {
 			g.clients = append(g.clients[:i], g.clients[i+1:]...)
 			client.Close()
-			g.Broadcast([]byte(client.Name + " has left the game"))
+			g.Broadcast([]byte("left:" + client.Name))
 			break
 		}
 	}
