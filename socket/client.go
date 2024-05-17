@@ -29,7 +29,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 
 	return &Client{
 		Id:   uuid.New().ID(),
-		Name: "John",
+		Name: "John" + strconv.FormatUint(uint64(uuid.New().ID()), 10),
 		Conn: conn,
 		send: make(chan []byte),
 	}
