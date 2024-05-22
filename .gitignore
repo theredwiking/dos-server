@@ -1,4 +1,4 @@
-# Air
+# Live reload
 tmp
 
 # Binaries for programs and plugins
@@ -7,6 +7,9 @@ tmp
 *.dll
 *.so
 *.dylib
+
+# Binary built with `go build`
+dist
 
 # Test binary, built with `go test -c`
 *.test
