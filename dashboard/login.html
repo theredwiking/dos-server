@@ -17,7 +17,7 @@
 		<script type="module">
 			// Import the functions you need from the SDKs you need
 			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-			import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js'
+			import { getAuth, signInWithEmailAndPassword, getIdToken } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js'
 			// TODO: Add SDKs for Firebase products that you want to use
 			// https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -41,7 +41,16 @@
 				signInWithEmailAndPassword(auth, email, password)
 					.then((userCredential) => {
 						const user = userCredential.user;
-						console.log(user);
+						user.getIdToken()
+							.then((idToken) => {
+								document.cookie = `idToken=${idToken}`;
+								window.location.href = '/dashboard/';
+							})
+							.catch((error) => {
+								const errorCode = error.code;
+								const errorMessage = error.message;
+								console.error(errorCode, errorMessage);
+							});
 					})
 					.catch((error) => {
 						const errorCode = error.code;

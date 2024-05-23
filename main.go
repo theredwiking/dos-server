@@ -15,6 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing firebase app: %v\n", err)
 	}
+
 	router := http.NewServeMux()
 	router.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Server is running"))
