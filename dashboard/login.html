@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+	<body>
+		<center>
+			<h1>Login</h1>
+		</center>
+		<center>
+			<form id="login">
+				<input type="text" placeholder="Email" id="email" required><br>
+				<input type="password" placeholder="Password" id="password" required><br>
+				<button type="submit">Login</button>
+			</form>
+		</center>
+		<script type="module">
+			// Import the functions you need from the SDKs you need
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+			import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js'
+			// TODO: Add SDKs for Firebase products that you want to use
+			// https://firebase.google.com/docs/web/setup#available-libraries
+
+			// Your web app's Firebase configuration
+			const firebaseConfig = {
+				apiKey: "AIzaSyB1-FxniCg_PG9uD5p5iQdCGjzPt9-guiM",
+				authDomain: "dos-game-cabae.firebaseapp.com",
+				projectId: "dos-game-cabae",
+				storageBucket: "dos-game-cabae.appspot.com",
+				messagingSenderId: "143255054617",
+				appId: "1:143255054617:web:9e0fdc3ff21b67f46e7d88"
+			};
+			// Initialize Firebase
+			const app = initializeApp(firebaseConfig);
+			const auth = getAuth(app);
+			const login = document.getElementById('login');
+			login.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const email = document.getElementById('email').value;
+				const password = document.getElementById('password').value;
+				signInWithEmailAndPassword(auth, email, password)
+					.then((userCredential) => {
+						const user = userCredential.user;
+						console.log(user);
+					})
+					.catch((error) => {
+						const errorCode = error.code;
+						const errorMessage = error.message;
+						console.error(errorCode, errorMessage);
+					});
+			});
+		</script>
+	</body>
+</html>

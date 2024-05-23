@@ -7,10 +7,11 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/theredwiking/dos-server/api"
+	"github.com/theredwiking/dos-server/dashboard"
 )
 
 func main() {
-	_, err := firebase.NewApp(context.Background(), nil)
+	app, err := firebase.NewApp(context.Background(), nil)
 	if err != nil {
 		log.Fatalf("error initializing firebase app: %v\n", err)
 	}
@@ -18,6 +19,9 @@ func main() {
 	router.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Server is running"))
 	})
+
+	dashboard := dashboard.Routes(app)
+	router.Handle("/dashboard/", http.StripPrefix("/dashboard", dashboard))
 
 	gameRoutes := api.Routes()
 	router.Handle("/game/", http.StripPrefix("/game", gameRoutes))
