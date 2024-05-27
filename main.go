@@ -24,7 +24,7 @@ func main() {
 	dashboard := dashboard.Routes(app)
 	router.Handle("/dashboard/", http.StripPrefix("/dashboard", dashboard))
 
-	gameRoutes := api.Routes()
+	gameRoutes := api.Routes(app)
 	router.Handle("/game/", http.StripPrefix("/game", gameRoutes))
 
 
