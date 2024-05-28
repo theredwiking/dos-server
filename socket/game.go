@@ -30,7 +30,18 @@ func (g *Game) AddClient(client Client) {
 	go client.Write()
 	go client.Read(g.messages)
 	g.Connections++
+	g.clientList(client)
 	g.Broadcast([]byte("joined:" + client.Name))
+}
+
+func (g *Game) clientList(client Client) {
+	list := "list:"
+	for _, c := range g.clients {
+		if c.Id != client.Id {
+			list += c.Name + ","
+		}
+	}
+	client.send <- []byte("clients:" + list)
 }
 
 func (g *Game) Start() {

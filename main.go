@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"log"
+	"embed"
 	"net/http"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/theredwiking/dos-server/api"
 	"github.com/theredwiking/dos-server/dashboard"
 )
+
+//go:embed dashboard/*
+var dashboardFiles embed.FS
 
 func main() {
 	app, err := firebase.NewApp(context.Background(), nil)
@@ -21,7 +25,7 @@ func main() {
 		w.Write([]byte("Server is running"))
 	})
 
-	dashboard := dashboard.Routes(app)
+	dashboard := dashboard.Routes(app, dashboardFiles)
 	router.Handle("/dashboard/", http.StripPrefix("/dashboard", dashboard))
 
 	gameRoutes := api.Routes(app)

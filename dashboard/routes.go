@@ -2,12 +2,14 @@ package dashboard
 
 import (
 	"context"
+	"embed"
 	"log"
 	"net/http"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 )
+
 
 func AuthCheck(next http.Handler, client *auth.Client) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -31,23 +33,30 @@ func AuthCheck(next http.Handler, client *auth.Client) http.Handler {
 	})
 }
 
-func renderHtml(file string) http.Handler {
+func renderHtml(file string, fs embed.FS) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "dashboard/" + file)
+		data, err := fs.ReadFile("dashboard/" + file)
+		if err != nil {
+			http.Error(w, "error reading file", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
 	})
 }
 
 // Routes returns a http.Handler that serves the dashboard routes
-func Routes(app *firebase.App) http.Handler {
+func Routes(app *firebase.App, files embed.FS) http.Handler {
 	client, err := app.Auth(context.Background())
 	if err != nil {
 		log.Fatalf("error getting Auth client: %v\n", err)
 	}
 	router := http.NewServeMux()
 
-	router.Handle("/login", renderHtml("login.html"))
+	router.Handle("/login", renderHtml("login.html", files))
 
-	router.Handle("/", AuthCheck(renderHtml("index.html"), client))
+	router.Handle("/", AuthCheck(renderHtml("index.html", files), client))
 
 	return router
 }
