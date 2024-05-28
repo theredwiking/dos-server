@@ -11,7 +11,7 @@ import (
 )
 
 type Client struct {
-	Id   uint32 `json:"id"`
+	Id   string `json:"id"`
 	Name string	`json:"name"`
 	Conn *websocket.Conn
 	send chan []byte
@@ -28,15 +28,11 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 	}
 
 	return &Client{
-		Id:   uuid.New().ID(),
+		Id:   "",
 		Name: "John" + strconv.FormatUint(uint64(uuid.New().ID()), 10),
 		Conn: conn,
 		send: make(chan []byte),
 	}
-}
-
-func (c *Client) id() string {
-	return strconv.FormatUint(uint64(c.Id), 10)
 }
 
 func (c *Client) Read(messages chan []byte) {
@@ -46,7 +42,7 @@ func (c *Client) Read(messages chan []byte) {
 			log.Println(err)
 			return
 		}
-		msg = []byte(c.id() + ": " + string(msg))
+		msg = []byte(c.Id + ": " + string(msg))
 		messages <- msg
 	}
 }

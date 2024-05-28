@@ -2,18 +2,17 @@ package socket
 
 import (
 	"log"
-	"strconv"
 )
 
 type GameInfo struct {
 	Code string `json:"code"`
-	Owner uint32 `json:"owner"`
+	Owner string `json:"owner"`
 }
 
 type Game struct {
 	Info GameInfo `json:"info"`
 	clients []Client
-	Connections uint32
+	Connections uint32 `json:"connections"`
 	messages chan []byte
 }
 
@@ -48,18 +47,14 @@ func (g *Game) Close() {
 	}
 }
 
-func splitMessage(message []byte) (uint32, []byte, []byte) {
-	id := uint32(0)
+func splitMessage(message []byte) (string, []byte, []byte) {
+	id := ""
 	for i, byte := range message {
 		if byte == ':' {
-			id, err := strconv.ParseUint(string(message[:i]), 10, 32)
-			if err != nil {
-				log.Println(err)
-				id = 0
-			}
+			id := string(message[:i])
 			for j, byte := range message[i+1:] {
 				if byte == ':' {
-					return uint32(id), message[i+1:i+j+1], message[i+j+2:]
+					return id, message[i+1:i+j+1], message[i+j+2:]
 				}
 			}
 		}
@@ -72,7 +67,7 @@ func (g *Game) ReadMessages() {
 		select {
 		case msg := <-g.messages:
 			id, action, message := splitMessage(msg)
-			if id == 0 {
+			if id == "" {
 				log.Println("Invalid message received")
 				continue
 			}

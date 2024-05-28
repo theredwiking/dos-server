@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"net/http"
 
-	"github.com/google/uuid"
+	"firebase.google.com/go/v4/auth"
 	"github.com/theredwiking/dos-server/socket"
 )
 
@@ -13,7 +13,7 @@ import (
 func create(w http.ResponseWriter, r *http.Request) {
 	game := socket.GameInfo{
 		Code: generateCode(),
-		Owner: uuid.New().ID(),
+		Owner: r.Context().Value("user").(*auth.Token).UID,
 	}
 
 	jsonData, err := json.Marshal(game)
