@@ -79,7 +79,7 @@ func (g *Game) ReadMessages() {
 					g.End()
 				}
 			}
-			log.Printf("Message received from client %d: %s\n", id, message)
+			log.Printf("Message received from client %s: %s\n", id, message)
 		}
 	}
 }
@@ -90,7 +90,7 @@ func (g *Game) IsFull() bool {
 
 func (g *Game) Broadcast(message []byte) {
 	for _, client := range g.clients {
-		log.Printf("Broadcasting message to client %d: %s\n", client.Id, message)
+		log.Printf("Broadcasting message to client %s: %s\n", client.Id, message)
 		client.send <- message
 	}
 }

@@ -23,7 +23,6 @@ func removeGame(code string) {
 
 func joinGame(w http.ResponseWriter, r *http.Request) {
 	gameId := r.PathValue("code")
-	log.Println(r.Context().Value("user"))
 
 	game := gameList[gameId]
 	if game == nil {

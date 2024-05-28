@@ -3,10 +3,10 @@ package socket
 import (
 	"log"
 	"net/http"
-	"strconv"
+	"strings"
 	"time"
 
-	"github.com/google/uuid"
+	"firebase.google.com/go/v4/auth"
 	"github.com/gorilla/websocket"
 )
 
@@ -29,7 +29,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 
 	return &Client{
 		Id:   "",
-		Name: "John" + strconv.FormatUint(uint64(uuid.New().ID()), 10),
+		Name: strings.Split(r.Context().Value("user").(*auth.Token).Claims["email"].(string), "@")[0],
 		Conn: conn,
 		send: make(chan []byte),
 	}
@@ -58,7 +58,6 @@ func (c *Client) Write() {
 			}
 
 		case <-ticker.C:
-			log.Println("Sending ping to client", c.Id)
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				log.Println(err)
 				return
