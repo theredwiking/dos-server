@@ -28,7 +28,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 	}
 
 	return &Client{
-		Id:   "",
+		Id:   r.Context().Value("user").(*auth.Token).UID,
 		Name: strings.Split(r.Context().Value("user").(*auth.Token).Claims["email"].(string), "@")[0],
 		Conn: conn,
 		send: make(chan []byte),
