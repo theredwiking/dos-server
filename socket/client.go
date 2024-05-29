@@ -3,15 +3,15 @@ package socket
 import (
 	"log"
 	"net/http"
-	"strconv"
+	"strings"
 	"time"
 
-	"github.com/google/uuid"
+	"firebase.google.com/go/v4/auth"
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
-	Id   uint32 `json:"id"`
+	Id   string `json:"id"`
 	Name string	`json:"name"`
 	Conn *websocket.Conn
 	send chan []byte
@@ -28,15 +28,11 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 	}
 
 	return &Client{
-		Id:   uuid.New().ID(),
-		Name: "John" + strconv.FormatUint(uint64(uuid.New().ID()), 10),
+		Id:   r.Context().Value("user").(*auth.Token).UID,
+		Name: strings.Split(r.Context().Value("user").(*auth.Token).Claims["email"].(string), "@")[0],
 		Conn: conn,
 		send: make(chan []byte),
 	}
-}
-
-func (c *Client) id() string {
-	return strconv.FormatUint(uint64(c.Id), 10)
 }
 
 func (c *Client) Read(messages chan []byte) {
@@ -46,7 +42,7 @@ func (c *Client) Read(messages chan []byte) {
 			log.Println(err)
 			return
 		}
-		msg = []byte(c.id() + ": " + string(msg))
+		msg = []byte(c.Id + ": " + string(msg))
 		messages <- msg
 	}
 }
@@ -62,7 +58,6 @@ func (c *Client) Write() {
 			}
 
 		case <-ticker.C:
-			log.Println("Sending ping to client", c.Id)
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				log.Println(err)
 				return

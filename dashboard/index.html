@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			table, th, td {
+				border: 1px solid black;
+			}
+		</style>
+		<title>Main</title>
+	</head>
+	<body>
+		<center>
+			<h1>Dashboard for monitoring and controlling dos</h1>
+		</center>
+		<table id="gameTable">
+			<tr>
+				<th>Game Code</th>
+				<th>Game Owner</th>
+				<th>Game Players</th>
+			</tr>
+		</table>
+		<script>
+			fetch('http://localhost:3000/game/active', {
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': document.cookie.split('=')[1]
+				}
+			})
+				.then(response => response.json())
+				.then(data => {
+					for (let key in data) {
+						let game = data[key];
+						console.log(game);
+						const row = document.createElement('tr');
+						const code = document.createElement('td');
+						const owner = document.createElement('td');
+						const players = document.createElement('td');
+						code.textContent = game.info.code;
+						owner.textContent = game.info.owner;
+						players.textContent = game.connections;
+						row.appendChild(code);
+						row.appendChild(owner);
+						row.appendChild(players);
+						document.getElementById('gameTable').appendChild(row);
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+		</script>
+	</body>
+</html>
