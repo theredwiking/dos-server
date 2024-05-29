@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -9,7 +10,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+type UserInfo struct{
+	Email string `json:"email"`
+	UID string `json:"uid"`
+}
+
 func UserList(w http.ResponseWriter, r *http.Request, client *auth.Client) {
+	userList := []auth.UserInfo{}
+
 	iter := client.Users(context.Background(), "")
 	for {
 		user, err := iter.Next()
@@ -20,10 +28,17 @@ func UserList(w http.ResponseWriter, r *http.Request, client *auth.Client) {
 		if err != nil {
 			log.Printf("error listing users: %v\n", err)
 		}
-
-		log.Printf("User: %s\n", user.Email)
+		userList = append(userList, *user.UserInfo)
+	}
+	
+	users, err := json.Marshal(userList)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error reading list of users", http.StatusInternalServerError)
+		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Users listed"))
+	w.Write(users)
 }

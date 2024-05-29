@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<style>
-			table, th, td {
-				border: 1px solid black;
-			}
+table, th, td {
+	border: 1px solid black;
+}
 		</style>
 		<title>Main</title>
 	</head>
@@ -43,6 +43,36 @@
 						row.appendChild(players);
 						document.getElementById('gameTable').appendChild(row);
 					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+			fetch('http://localhost:3000/admin/users', {
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': document.cookie.split('=')[1]
+				}
+			})
+				.then(response => response.json())
+				.then(data => {
+					data.forEach(user => {
+						console.log(user);
+					});
+					//for (let key in data) {
+					//	let game = data[key];
+					//	console.log(game);
+					//	const row = document.createElement('tr');
+					//	const code = document.createElement('td');
+					//	const owner = document.createElement('td');
+					//	const players = document.createElement('td');
+					//	code.textContent = game.info.code;
+					//	owner.textContent = game.info.owner;
+					//	players.textContent = game.connections;
+					//	row.appendChild(code);
+					//	row.appendChild(owner);
+					//	row.appendChild(players);
+					//	document.getElementById('gameTable').appendChild(row);
+					//}
 				})
 				.catch(error => {
 					console.error('Error:', error);
