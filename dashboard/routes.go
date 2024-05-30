@@ -26,6 +26,7 @@ func AuthCheck(next http.Handler, client *auth.Client) http.Handler {
 		
 		_, err = client.VerifyIDToken(r.Context(), cookie.Value)
 		if err != nil {
+			log.Printf("error verifying token: %v\n", err)
 			http.Error(w, "error verifying token", http.StatusUnauthorized)
 			return
 		}
