@@ -82,13 +82,12 @@
 				.then(response => response.json())
 				.then(data => {
 					data.forEach(user => {
-						console.log(user);
 						const row = document.createElement('tr');
 						const email = document.createElement('td');
 						const provider = document.createElement('td');
 						const uid = document.createElement('td');
 						email.textContent = user.email;
-						provider.textContent = user.provider;
+						provider.textContent = user.providerId;
 						uid.textContent = user.rawId;
 						row.appendChild(email);
 						row.appendChild(provider);
