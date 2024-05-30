@@ -34,7 +34,20 @@ func AuthCheck(next http.Handler, client *auth.Client) http.Handler {
 	})
 }
 
-func Routes(app *firebase.App) *http.ServeMux{
+func FirebaseRoutes(app *firebase.App) *http.ServeMux {
+	client, err := app.Auth(context.Background())
+	if err != nil {
+		log.Fatalf("error getting Auth client: %v\n", err)
+	}
+
+	router := http.NewServeMux()
+
+	router.Handle("GET /users", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {UserList(w, r, client)}), client))
+
+	return router
+}
+
+func GameRoutes(app *firebase.App) *http.ServeMux{
 	client, err := app.Auth(context.Background())	
 	if err != nil {
 		log.Fatalf("error getting Auth client: %v\n", err)
