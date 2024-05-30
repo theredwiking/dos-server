@@ -47,7 +47,7 @@
 		</div>
 
 		<script>
-			fetch('http://localhost:3000/game/active', {
+			fetch('/game/active', {
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': document.cookie.split('=')[1]
@@ -73,7 +73,7 @@
 				.catch(error => {
 					console.error('Error:', error);
 				});
-			fetch('http://localhost:3000/admin/users', {
+			fetch('/admin/users', {
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': document.cookie.split('=')[1]
