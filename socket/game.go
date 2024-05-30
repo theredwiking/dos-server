@@ -82,7 +82,7 @@ func (g *Game) ReadMessages() {
 				log.Println("Invalid message received")
 				continue
 			}
-			if id == g.Info.Owner && string(action) == "game" {
+			if id == g.Info.Owner && string(action) == " game" {
 				switch string(message) {
 				case "start":
 					g.Start()
