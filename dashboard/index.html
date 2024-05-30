@@ -1,24 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-core="modern" data-bs-theme="dark">
 	<head>
-		<style>
-table, th, td {
-	border: 1px solid black;
-}
-		</style>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<link href="https://cdn.jsdelivr.net/npm/halfmoon@2.0.1/css/halfmoon.min.css" rel="stylesheet" integrity="sha256-SsJizWSIG9JT9Qxbiy8xnYJfjCAkhEQ0hihxRn7jt2M=" crossorigin="anonymous">
+		<link href="https://cdn.jsdelivr.net/npm/halfmoon@2.0.1/css/cores/halfmoon.modern.css" rel="stylesheet" integrity="sha256-DD6elX+jPmbFYPsGvzodUv2+9FHkxHlVtQi0/RJVULs=" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 		<title>Main</title>
 	</head>
 	<body>
 		<center>
 			<h1>Dashboard for monitoring and controlling dos</h1>
 		</center>
-		<table id="gameTable">
-			<tr>
-				<th>Game Code</th>
-				<th>Game Owner</th>
-				<th>Game Players</th>
-			</tr>
-		</table>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h2>Active Games</h2>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Game Code</th>
+								<th>Game Owner</th>
+								<th>Game Players</th>
+							</tr>
+						</thead>
+						<tbody id="gameTable">
+						</tbody>
+					</table>
+				</div>
+				<div class="col">
+					<h2>Users</h2>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Email</th>
+								<th>Provider</th>
+								<th>Uid</th>
+							</tr>
+						</thead>
+						<tbody id="userTable">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
 		<script>
 			fetch('http://localhost:3000/game/active', {
 				headers: {
@@ -30,7 +57,6 @@ table, th, td {
 				.then(data => {
 					for (let key in data) {
 						let game = data[key];
-						console.log(game);
 						const row = document.createElement('tr');
 						const code = document.createElement('td');
 						const owner = document.createElement('td');
@@ -56,23 +82,18 @@ table, th, td {
 				.then(response => response.json())
 				.then(data => {
 					data.forEach(user => {
-						console.log(user);
-					});
-					//for (let key in data) {
-					//	let game = data[key];
-					//	console.log(game);
-					//	const row = document.createElement('tr');
-					//	const code = document.createElement('td');
-					//	const owner = document.createElement('td');
-					//	const players = document.createElement('td');
-					//	code.textContent = game.info.code;
-					//	owner.textContent = game.info.owner;
-					//	players.textContent = game.connections;
-					//	row.appendChild(code);
-					//	row.appendChild(owner);
-					//	row.appendChild(players);
-					//	document.getElementById('gameTable').appendChild(row);
-					//}
+						const row = document.createElement('tr');
+						const email = document.createElement('td');
+						const provider = document.createElement('td');
+						const uid = document.createElement('td');
+						email.textContent = user.email;
+						provider.textContent = user.provider;
+						uid.textContent = user.rawId;
+						row.appendChild(email);
+						row.appendChild(provider);
+						row.appendChild(uid);
+						document.getElementById('userTable').appendChild(row);
+					})
 				})
 				.catch(error => {
 					console.error('Error:', error);
