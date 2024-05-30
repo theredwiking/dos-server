@@ -82,6 +82,7 @@
 				.then(response => response.json())
 				.then(data => {
 					data.forEach(user => {
+						console.log(user);
 						const row = document.createElement('tr');
 						const email = document.createElement('td');
 						const provider = document.createElement('td');
