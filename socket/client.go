@@ -38,12 +38,21 @@ func NewClient(w http.ResponseWriter, r *http.Request) *Client {
 func (c *Client) Read(messages chan []byte) {
 	for {
 		_, msg, err := c.Conn.ReadMessage()
+		left := false
 		if err != nil {
-			log.Println(err)
+			if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
+				left = true
+				msg = []byte("left:" + c.Id)
+			} else {
+				log.Printf("Client read error: %v", err)
+				return
+			}
+		}
+		msg = []byte(c.Id + ":" + string(msg))
+		messages <- msg
+		if left {
 			return
 		}
-		msg = []byte(c.Id + ": " + string(msg))
-		messages <- msg
 	}
 }
 
@@ -52,13 +61,15 @@ func (c *Client) Write() {
 	for {
 		select {
 		case msg := <-c.send:
-			err := c.Conn.WriteMessage(websocket.TextMessage, msg)
-			if err != nil {
-				log.Println(err)
+			if string(msg) == "leave" {
+				break
+			}
+			if err := c.Conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				log.Printf("Client write error: %v", err)
 			}
 
 		case <-ticker.C:
-			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			if err := c.Conn.WriteMessage(websocket.PingMessage, []byte("keepalive")); err != nil {
 				log.Println(err)
 				return
 			}
