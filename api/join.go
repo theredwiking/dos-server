@@ -17,7 +17,8 @@ func addGame(game socket.GameInfo) {
 	gameList[game.Code] = newGame
 }
 
-func removeGame(code string) {
+func removeGame(w http.ResponseWriter, r *http.Request) {
+	code := r.PathValue("code")
 	delete(gameList, code)
 }
 

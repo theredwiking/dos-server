@@ -50,6 +50,11 @@ func (g *Game) Start() {
 
 func (g *Game) End() {
 	g.Broadcast([]byte("game:ended"))
+	for i, client := range g.clients {
+		g.clients = append(g.clients[:i], g.clients[i+1:]...)
+		client.send <- []byte("leave")
+		client.Close()
+	}
 }
 
 func (g *Game) Close() {
@@ -99,6 +104,10 @@ func (g *Game) ReadMessages() {
 					g.playerMessage([]byte("turn:now"), string(message))
 				case "left":
 					g.RemoveClient(string(message))
+				case "dos":
+					g.Broadcast([]byte("dos:" + string(message)))
+				case "win":
+					g.Broadcast([]byte("won:" + string(message)))
 				default:
 					log.Printf("Invalid action received: %s\n", action)
 				}
