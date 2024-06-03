@@ -63,6 +63,15 @@ func (g *Game) Close() {
 	}
 }
 
+func (g *Game) clientName(id string) string {
+	for _, client := range g.clients {
+		if client.Id == id {
+			return client.Name
+		}
+	}
+	return ""
+}
+
 func splitMessage(message []byte) (string, []byte, []byte) {
 	id := ""
 	for i, byte := range message {
@@ -99,13 +108,17 @@ func (g *Game) ReadMessages() {
 				case "ready":
 					g.ownerMessage([]byte("turn:now"))
 				case "played":
-					g.Broadcast([]byte("played:" + id + ":" + string(message)))
+					g.Broadcast([]byte("played:" + g.clientName(id) + ":" + string(message)))
 				case "turn":
 					g.playerMessage([]byte("turn:now"), string(message))
 				case "left":
 					g.RemoveClient(string(message))
 				case "dos":
 					g.Broadcast([]byte("dos:" + string(message)))
+				case "card":
+					g.Broadcast([]byte("pulled:" + g.clientName(id)))
+				case "color":
+					g.Broadcast([]byte("color:" + string(message)))
 				case "win":
 					g.Broadcast([]byte("won:" + string(message)))
 				default:
