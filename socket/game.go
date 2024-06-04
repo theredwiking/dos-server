@@ -116,7 +116,11 @@ func (g *Game) ReadMessages() {
 				case "dos":
 					g.Broadcast([]byte("dos:" + string(message)))
 				case "card":
-					g.Broadcast([]byte("pulled:" + g.clientName(id)))
+					if string(message) == "reset" {
+						g.Broadcast([]byte("count:reset"))
+					} else {
+						g.Broadcast([]byte("pulled:" + g.clientName(id)))
+					}
 				case "color":
 					g.Broadcast([]byte("color:" + string(message)))
 				case "win":
