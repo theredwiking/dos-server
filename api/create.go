@@ -30,7 +30,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 }
 
 func generateCode() string {
-	possibleChars := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGLMNOPQRSTUVWXYZ"
+	possibleChars := "0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"
 	code := ""
 	for i := 0; i < 6; i++ {
 		code += string(possibleChars[rand.Intn(len(possibleChars))])

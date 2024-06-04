@@ -58,6 +58,7 @@ func GameRoutes(app *firebase.App) *http.ServeMux{
 	router.Handle("GET /create", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {create(w, r)}), client))
 	router.Handle("GET /active", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {activeGames(w, r)}), client))
 	router.Handle("GET /join/{code}", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {joinGame(w, r)}), client))
+	router.Handle("DELETE /delete/{code}", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {removeGame(w, r)}), client))
 
 	return router
 }

@@ -22,7 +22,7 @@ func main() {
 
 	router := http.NewServeMux()
 	router.HandleFunc("GET /status", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Server is running"))
+		w.Write([]byte("Server is running 0.5.3\n"))
 	})
 
 	dashboard := dashboard.Routes(app, dashboardFiles)

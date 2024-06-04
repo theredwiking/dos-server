@@ -14,3 +14,7 @@ build: clean
 clean:
 	rm -rf dist
 
+docker:
+	docker build -t dosserver:latest .
+	docker tag dosserver:latest ewr.vultrcr.com/cloudregistry/dosserver:latest
+	docker push ewr.vultrcr.com/cloudregistry/dosserver:latest
