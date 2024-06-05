@@ -43,6 +43,7 @@ func FirebaseRoutes(app *firebase.App) *http.ServeMux {
 	router := http.NewServeMux()
 
 	router.Handle("GET /users", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {UserList(w, r, client)}), client))
+	router.Handle("DELETE /delete/{uid}", AuthCheck(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {DeleteUser(w, r, client)}), client))
 
 	return router
 }

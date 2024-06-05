@@ -10,6 +10,19 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+func DeleteUser(w http.ResponseWriter, r *http.Request, client *auth.Client) {
+	uid := r.PathValue("uid")
+	
+	if err := client.DeleteUser(context.Background(), uid);	err != nil {
+		log.Printf("error deleting user: %v\n", err)
+		http.Error(w, "Error deleting user", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
 func UserList(w http.ResponseWriter, r *http.Request, client *auth.Client) {
 	userList := []auth.UserInfo{}
 
