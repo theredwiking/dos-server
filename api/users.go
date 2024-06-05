@@ -10,7 +10,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-
 func UserList(w http.ResponseWriter, r *http.Request, client *auth.Client) {
 	userList := []auth.UserInfo{}
 
