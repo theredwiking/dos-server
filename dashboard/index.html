@@ -23,6 +23,7 @@
 								<th>Game Code</th>
 								<th>Game Owner</th>
 								<th>Game Players</th>
+								<th>Delete</th>
 							</tr>
 						</thead>
 						<tbody id="gameTable">
@@ -37,6 +38,7 @@
 								<th>Email</th>
 								<th>Provider</th>
 								<th>Uid</th>
+								<th>Delete</th>
 							</tr>
 						</thead>
 						<tbody id="userTable">
@@ -47,57 +49,108 @@
 		</div>
 
 		<script>
-			fetch('/game/active', {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': document.cookie.split('=')[1]
-				}
-			})
-				.then(response => response.json())
-				.then(data => {
-					for (let key in data) {
-						let game = data[key];
-						const row = document.createElement('tr');
-						const code = document.createElement('td');
-						const owner = document.createElement('td');
-						const players = document.createElement('td');
-						code.textContent = game.info.code;
-						owner.textContent = game.info.owner;
-						players.textContent = game.connections;
-						row.appendChild(code);
-						row.appendChild(owner);
-						row.appendChild(players);
-						document.getElementById('gameTable').appendChild(row);
+			function gameTable() {
+				fetch('/game/active', {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': document.cookie.split('=')[1]
 					}
 				})
-				.catch(error => {
-					console.error('Error:', error);
-				});
-			fetch('/admin/users', {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': document.cookie.split('=')[1]
-				}
-			})
-				.then(response => response.json())
-				.then(data => {
-					data.forEach(user => {
-						const row = document.createElement('tr');
-						const email = document.createElement('td');
-						const provider = document.createElement('td');
-						const uid = document.createElement('td');
-						email.textContent = user.email;
-						provider.textContent = user.providerId;
-						uid.textContent = user.rawId;
-						row.appendChild(email);
-						row.appendChild(provider);
-						row.appendChild(uid);
-						document.getElementById('userTable').appendChild(row);
+					.then(response => response.json())
+					.then(data => {
+						for (let key in data) {
+							let game = data[key];
+							const row = document.createElement('tr');
+							const code = document.createElement('td');
+							const owner = document.createElement('td');
+							const players = document.createElement('td');
+							const deleteTd = document.createElement('td');
+							const deleteBtn = document.createElement('button');
+
+							code.textContent = game.info.code;
+							owner.textContent = game.info.owner;
+							players.textContent = game.connections;
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.onclick = () => {
+								console.log(user.rawId);
+								fetch('/game/delete/' + game.info.code, {
+									method: 'DELETE',
+									headers: {
+										'Authorization': document.cookie.split('=')[1]
+									},
+								})
+									.then(() => {
+										window.location.reload();
+									})
+									.catch(error => {
+										console.error('Error:', error);
+									});
+							}
+							row.appendChild(code);
+							row.appendChild(owner);
+							row.appendChild(players);
+							deleteBtn.classList.add('btn', 'btn-danger');
+							deleteTd.appendChild(deleteBtn);
+							row.appendChild(deleteTd);
+							document.getElementById('gameTable').appendChild(row);
+						}
 					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+			}
+			function userTable() {
+				console.log("User Table");
+				fetch('/admin/users', {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': document.cookie.split('=')[1]
+					}
 				})
-				.catch(error => {
-					console.error('Error:', error);
-				});
+					.then(response => response.json())
+					.then(data => {
+						data.forEach(user => {
+							const row = document.createElement('tr');
+							const email = document.createElement('td');
+							const provider = document.createElement('td');
+							const uid = document.createElement('td');
+							const deleteTd = document.createElement('td');
+							const deleteBtn = document.createElement('button');
+
+							email.textContent = user.email;
+							provider.textContent = user.providerId;
+							uid.textContent = user.rawId;
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.onclick = () => {
+								console.log(user.rawId);
+								fetch('/admin/delete/' + user.rawId, {
+									method: 'DELETE',
+									headers: {
+										'Authorization': document.cookie.split('=')[1]
+									},
+								})
+									.then(() => {
+										window.location.reload();
+									})
+									.catch(error => {
+										console.error('Error:', error);
+									});
+							}
+							row.appendChild(email);
+							row.appendChild(provider);
+							row.appendChild(uid);
+							deleteBtn.classList.add('btn', 'btn-danger');
+							deleteTd.appendChild(deleteBtn);
+							row.appendChild(deleteTd);
+							document.getElementById('userTable').appendChild(row);
+						})
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
+			}
+			gameTable();
+			userTable();
 		</script>
 	</body>
 </html>
