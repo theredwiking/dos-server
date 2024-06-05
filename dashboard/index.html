@@ -23,6 +23,7 @@
 								<th>Game Code</th>
 								<th>Game Owner</th>
 								<th>Game Players</th>
+								<th>Delete</th>
 							</tr>
 						</thead>
 						<tbody id="gameTable">
@@ -63,13 +64,34 @@
 							const code = document.createElement('td');
 							const owner = document.createElement('td');
 							const players = document.createElement('td');
+							const deleteTd = document.createElement('td');
+							const deleteBtn = document.createElement('button');
+
 							code.textContent = game.info.code;
 							owner.textContent = game.info.owner;
 							players.textContent = game.connections;
-
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.onclick = () => {
+								console.log(user.rawId);
+								fetch('/game/delete/' + game.info.code, {
+									method: 'DELETE',
+									headers: {
+										'Authorization': document.cookie.split('=')[1]
+									},
+								})
+									.then(() => {
+										window.location.reload();
+									})
+									.catch(error => {
+										console.error('Error:', error);
+									});
+							}
 							row.appendChild(code);
 							row.appendChild(owner);
 							row.appendChild(players);
+							deleteBtn.classList.add('btn', 'btn-danger');
+							deleteTd.appendChild(deleteBtn);
+							row.appendChild(deleteTd);
 							document.getElementById('gameTable').appendChild(row);
 						}
 					})
