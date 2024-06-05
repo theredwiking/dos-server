@@ -10,10 +10,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type UserInfo struct{
-	Email string `json:"email"`
-	UID string `json:"uid"`
-}
 
 func UserList(w http.ResponseWriter, r *http.Request, client *auth.Client) {
 	userList := []auth.UserInfo{}
