@@ -3,8 +3,8 @@
 ## Dependencies
 - [Go](https://golang.org/doc/install)
 - [Docker](https://docs.docker.com/get-docker/)
-- [Fresh] (https://github.com/gravityblast/fresh)
-- [Make] (https://www.gnu.org/software/make/)
+- [Fresh](https://github.com/gravityblast/fresh)
+- [Make](https://www.gnu.org/software/make/)
 
 ## Getting Started
 1. Clone the repository
