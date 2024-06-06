@@ -1,4 +1,4 @@
-# dos-servera
+# dos-server
 
 ## Dependencies
 - [Go](https://golang.org/doc/install)
