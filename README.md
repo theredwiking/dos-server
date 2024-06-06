@@ -9,7 +9,8 @@
 ## Getting Started
 1. Clone the repository
 2. Make sure you have dos-server-sdk.json (Part of report submission)
-3. run ```bash
+3. run 
+```bash
     go mod download && go mod verify
 ```
 
